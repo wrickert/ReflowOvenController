@@ -29,10 +29,10 @@ class MCP9600():
             f = (temp * (9/5)) + 32
 
             self.lastReadTime = time.ticks_ms()
-            self.lastReadTCTemp = f
+            self.lastReadTCTemp = temp  
 
             # TODO change this back to float for better precision
-            self.fir.push(int(f))
-            return f
+            self.fir.push(int(temp))
+            return temp
         else:
             return self.lastReadTCTemp 
