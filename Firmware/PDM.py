@@ -4,7 +4,7 @@ from machine import Pin,Timer
 import time
 
 class PDM():
-    def __init__(self,pout=19,freq=20):
+    def __init__(self,pout=19,freq=200):
         """
         :param pout: output pin nr
         :param tim:  timer number
@@ -21,7 +21,7 @@ class PDM():
 
         # -1 seems to be the only timer on esp32
         self.tim = Timer(-1)
-        self.tim.init(mode=Timer.PERIODIC, period=freq,callback=lambda t: self.call_me())
+        #self.tim.init(mode=Timer.PERIODIC, period=freq,callback=lambda t: self.call_me())
 
     def set_output(self,out):
         """

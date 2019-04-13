@@ -38,8 +38,9 @@ class PID:
             """
             current_value = self.input_fun()
             self.error = self.set_point - current_value
-            print ('temp '+str(current_value))
-            print ('SP'+str(self.set_point))
+
+            #print ('temp '+str(current_value))
+            #print ('SP'+str(self.set_point))
 
             self.P_value = self.Kp * self.error
             self.D_value = self.Kd * ( current_value-self.prev_value)
@@ -66,13 +67,13 @@ class PID:
                 self.output = 0.0
             if self.output>100:
                 self.output = 100.0
-
+            """
             print("Setpoint: "+str(self.set_point))
             print("P: "+str(self.P_value))
             print("I: "+str(self.I_value))
             print("Output: "+str(self.output))
             print ()
-
+            """
             self.output_fun(self.output/100.0)
 
             self.last_update_time=  time.ticks_ms()

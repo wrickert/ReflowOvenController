@@ -1,5 +1,4 @@
-#import rainbowPiano
-
+import rainbowPiano
 #rainbowPiano.keys()
 
 from machine import Pin,I2C,Timer
@@ -10,6 +9,7 @@ from SSD1306 import SSD1306_I2C
 import micropython
 import ntptime
 import utime
+import sys
 
 micropython.alloc_emergency_exception_buf(100)
 
@@ -27,6 +27,14 @@ oled.show()
 
 pdm.set_output(0.7)
 
+"""
+def __init__():
+    global seconds
+    global stage
+    seconds = 0
+    stage = 0
+"""
+
 def get_temp():
     global tc
     #return tc.fir.get_value()*0.25
@@ -42,6 +50,7 @@ def run(point):
     prev_t = ''
     global seconds
     while True:#sw_state:
+        profile()
         temp= tc.read()
         pid.set_point = point 
         pid.update()
@@ -59,7 +68,9 @@ def run(point):
             print(t)
             print(u)
             print(v)
+            print()
             oled.fill(0)
+            
             oled.text(str(utime.localtime()[3]-5)+":"+str(utime.localtime()[4]),0,0)
             oled.text(t,0,20)
             oled.text(u,0,30)
@@ -67,31 +78,50 @@ def run(point):
             oled.text(str(seconds),100,0)
             oled.show()
             prev_t = t
-        utime.sleep_ms(50)
+        utime.sleep_ms(1000)
 
 # This function follows the reflow curve of SMD291AX250T3 smt paste
 def reflow():
-    reflowTimer = Timer(1)
-    reflowTimer.init(period=1000, mode=Timer.PERIODIC, callback=lambda t:profile())   
+    timeStart = utime.ticks_ms()
+    stage = 1
+    run(target[stage])
 
-target = [0,200,300,361,455,361,0]
-time = [0,30,120,150,210,240,260]
-stage = 0
+
+    """
+    reflowTimer = Timer(-1)
+    print("in reflow")
+    reflowTimer.init(period=1000, mode=Timer.PERIODIC, callback=profile())   
+    """
+
+target = [0,302,347,423,480,423,0]
+#target = [0,200,300,361,455,361,0]
+time =   [0,90,180,210,240,270,260]
+#time =   [0,90,120,150,210,240,260]
+timeStart = 0 
 seconds = 0
+stage = 0
 
 def profile():
     global seconds 
     global target
     global stage
-    seconds = seconds +1
+    seconds = (utime.ticks_diff(utime.ticks_ms(),timeStart)/1000)
+    #seconds = seconds +1
+    print("             Seconds are " + str(seconds))
+    if stage == 6:
+        print("Done!")
+        exit()
     if tc.read() >= target[stage] and seconds >= time[stage]:
         stage = stage + 1
-        if stage == 7:
-            print("Done!")
-            exit()
-        print("Moving to stage "+ str(stage) + " at tempature " +str(target[stage]))
+        print("************Moving to stage "+ str(stage) + " at tempature "+str(target[stage])+"**********")
         run(target[stage])
        
 def exit():
     #TODO play tone here
-    reflowTimer.deinit() 
+    #reflowTimer.deinit() 
+    rainbowPiano.setTone(4)
+    utime.sleep_ms(500) 
+    rainbowPiano.setTone(0)
+    pdm.pout.value(0)
+    sys.exit()
+    
