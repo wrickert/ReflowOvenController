@@ -4,6 +4,7 @@ import network
 #esp.osdebug(None)
 import webrepl
 
+'''
 sta_if = network.WLAN(network.STA_IF)
 ap_if = network.WLAN(network.AP_IF)
 
@@ -15,3 +16,4 @@ if not sta_if.isconnected():
     while not sta_if.isconnected():
         pass
 print('network config:', sta_if.ifconfig())
+'''
