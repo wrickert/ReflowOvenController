@@ -16,6 +16,8 @@ micropython.alloc_emergency_exception_buf(100)
 pdm = PDM()
 tc = MCP9600()
 
+
+
 oled = SSD1306_I2C(128,64,tc.i2c)
 
 #oled.text(sta_if.ifconfig()[0],0,0)
@@ -43,6 +45,16 @@ def __init__():
     seconds = 0
     stage = 0
 """
+
+# Press and hold Penny 0 for one second to begin reflow
+if rainbowPiano.t0.read() < rainbowPiano.thresh:
+    utime.sleep_ms(1000)
+    if rainbowPiano.t0.read() < rainbowPiano.thresh:
+        rainbowPiano.setTone(4)
+        utime.sleep_ms(1500) 
+        rainbowPiano.setTone(0)
+        reflow()
+    
 
 def get_temp():
     global tc
